@@ -11,14 +11,13 @@ It also includes an executable to interface with the VOT benchmark.
 [2] J. F. Henriques, R. Caseiro, P. Martins, J. Batista,   
 "Exploiting the Circulant Structure of Tracking-by-detection with Kernels", ECCV 2012.
 
-
 Authors: Joao Faro, Christian Bailer, Joao F. Henriques   
 Contacts: joaopfaro@gmail.com, Christian.Bailer@dfki.de, henriques@isr.uc.pt   
 Institute of Systems and Robotics - University of Coimbra / Department of Augmented Vision DFKI   
 
 ## Algorithms (in this folder)
 
-"KCFC++", command: ./KCF   
+"KCFC++", command: ./KCF
 Description: KCF on HOG features, ported to C++ OpenCV. The original Matlab tracker placed 3rd in VOT 2014.
 
 "KCFLabC++", command: ./KCF lab   
@@ -26,19 +25,11 @@ Description: KCF on HOG and Lab features, ported to C++ OpenCV. The Lab features
 
 The CSK tracker [2] is also implemented as a bonus, simply by using raw grayscale as features (the filter becomes single-channel).   
 
-## Compilation
-There are no external dependencies other than OpenCV 3.0.0+. Tested on freshly installed Ubuntu 14.04 / Ubuntu 16.04.   
-
-```bash
-$ mkdir build
-$ cd build
-$ cmake ..
-$ make
-```  
-
 ## Running instructions
 
-The directory `frames` contains all frame images named by their indices (start from 1). The file `config.txt` stores the configurations of the tracker:
+### Data
+
+The directory `bin/frames` contains all frame images named by their indices (start from 1). The file `bin/config.txt` stores the configurations of the tracker:
 
 ```
 120 human 205 151 222 201
@@ -48,11 +39,17 @@ The directory `frames` contains all frame images named by their indices (start f
 - "human": Label name.
 - "205 151 222 201": Bounding box (left-top coordinate + right-bottom coordinate) of the first frame. 
 
-Run KCF tracker:
+### Compile and run
+
+There are no external dependencies other than OpenCV 3.0.0+. Tested on freshly installed Ubuntu 14.04 / Ubuntu 16.04.   
 
 ```bash
+$ mkdir build
 $ cd build
-$ ./kcf
+$ cmake ..
+$ make
+$ cd ../bin
+$ ./KCF
 ```
 
 The bounding box of each frame will be stored to a file named `result.txt`:
@@ -70,19 +67,13 @@ For each row:
 - "human": Label name.
 - "205 151 222 201": Bounding box of the frame.
 
-**Tips:** If your frames are named like "0001.jpg", "02.jpg" or "0100.jpg" (e.g. datasets from [Visual Tracker Benchmark][VTB]), you should run the script below to normalize them to "1.jpg", "2.jpg" and "100.jpg", respectively:
-
-```
-$ python norm.py
-```
-
 ***
 
 ### Original instructions
 
 The runtracker.cpp is prepared to be used with the VOT toolkit. The executable "KCF" should be called as:   
 
-./kcf [OPTION_1] [OPTION_2] [...]
+./KCF [OPTION_1] [OPTION_2] [...]
 
 Options available:   
 

@@ -15,7 +15,8 @@ if ("${PROJECT_SOURCE_DIR}" STREQUAL "${PROJECT_BINARY_DIR}")
     message(FATAL_ERROR "In-source builds are not allowed.\nPlease try:\n1.Delete 'CMakeFiles' and 'CMakeCache.txt' in current directory\n2.Change to directory 'build' and run 'cmake ..'")
 endif ()
 
-set(PROJ_EXEC_NAME kcf)
+set(PROJ_EXEC_NAME KCF)
+set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 
 # Set default build type
 if (NOT CMAKE_BUILD_TYPE)

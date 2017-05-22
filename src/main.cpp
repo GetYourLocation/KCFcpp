@@ -21,7 +21,9 @@ std::string toString(const T &obj) {
 
 int main(int argc, char* argv[]) {
 
-    if (argc > 5) return -1;
+    if (argc > 5) {
+        return -1;
+    }
 
     bool HOG = true;
     bool FIXEDWINDOW = false;
@@ -51,25 +53,19 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    // Read config file
-    ifstream configFile;
-    string config = "../config.txt";
-    configFile.open(config);
+    // Read config
+    ifstream configFile("config.txt");
     string configLine;
     getline(configFile, configLine);
     configFile.close();
-    
-    // Read config like a dumb
-    istringstream ss(configLine);
+    istringstream iss(configLine);
     int totFrames;
-    float xMin, yMin, xMax, yMax;
     string label;
-    ss >> totFrames >> label >> xMin >> yMin >> xMax >> yMax;
+    float xMin, yMin, xMax, yMax;
+    iss >> totFrames >> label >> xMin >> yMin >> xMax >> yMax;
 
-    // Write Results
-    ofstream resultsFile;
-    string resultsPath = "result.txt";
-    resultsFile.open(resultsPath);
+    // Create result file
+    ofstream resultFile("result.txt");
 
     // Create KCFTracker object
     KCFTracker tracker(HOG, FIXEDWINDOW, MULTISCALE, LAB);
@@ -77,13 +73,13 @@ int main(int argc, char* argv[]) {
     for (int i = 1; i <= totFrames; ++i) {
         cout << "Computing frame " << i << endl;
 
-        string frameName = "../frames/" + toString(i) + ".jpg";
+        string frameName = "frames/" + toString(i) + ".jpg";
         Mat frame = imread(frameName, CV_LOAD_IMAGE_COLOR);
 
         if (i == 1) {  // First frame, give the groundtruth to the tracker
             tracker.init(Rect(xMin, yMin, xMax - xMin, yMax - yMin), frame);
             rectangle(frame, Point(xMin, yMin), Point(xMax, yMax), Scalar(0, 255, 255), 1, 8);
-            resultsFile << toString(i) << ".jpg "
+            resultFile << toString(i) << ".jpg "
                         << label << " "
                         << xMin << " "
                         << yMin << " "
@@ -92,7 +88,7 @@ int main(int argc, char* argv[]) {
         } else {  // Update
             Rect result = tracker.update(frame);
             rectangle(frame, Point(result.x, result.y), Point(result.x + result.width, result.y + result.height), Scalar( 0, 255, 255 ), 1, 8);
-            resultsFile << toString(i) << ".jpg "
+            resultFile << toString(i) << ".jpg "
                         << label << " "
                         << result.x << " "
                         << result.y << " "
@@ -101,7 +97,7 @@ int main(int argc, char* argv[]) {
         }
 
         if (i < totFrames) {
-            resultsFile << endl;
+            resultFile << endl;
         }
 
         if (!SILENT) {
@@ -109,6 +105,6 @@ int main(int argc, char* argv[]) {
             waitKey(50);
         }
     }
-    cout << "Results are stored in \"" + resultsPath + "\"." << endl;
-    resultsFile.close();
+    cout << "Results are saved to 'result.txt'." << endl;
+    resultFile.close();
 }
