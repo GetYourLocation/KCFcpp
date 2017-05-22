@@ -58,6 +58,10 @@ int main(int argc, char* argv[]) {
     string configLine;
     getline(configFile, configLine);
     configFile.close();
+    if (configLine.empty()) {
+        cout << "No configurations file found." << endl;
+        return -1;
+    }
     istringstream iss(configLine);
     int totFrames;
     string label;
