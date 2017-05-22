@@ -75,9 +75,10 @@ int main(int argc, char* argv[]) {
     KCFTracker tracker(HOG, FIXEDWINDOW, MULTISCALE, LAB);
 
     for (int i = 1; i <= totFrames; ++i) {
-        cout << "Computing frame " << i << endl;
+        cout << ".";
+        cout.flush();
 
-        string frameName = "frames/" + toString(i) + ".jpg";
+        string frameName = "JPEGImages/" + toString(i) + ".jpg";
         Mat frame = imread(frameName, CV_LOAD_IMAGE_COLOR);
 
         if (i == 1) {  // First frame, give the groundtruth to the tracker
@@ -109,6 +110,6 @@ int main(int argc, char* argv[]) {
             waitKey(50);
         }
     }
-    cout << "Results are saved to 'result.txt'." << endl;
+    cout << endl << "Results are saved to 'result.txt'." << endl;
     resultFile.close();
 }

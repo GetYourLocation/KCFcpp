@@ -29,7 +29,7 @@ The CSK tracker [2] is also implemented as a bonus, simply by using raw grayscal
 
 ### Data
 
-The directory `bin/frames` contains all frame images named by their indices (start from 1). The file `bin/config.txt` stores the configurations of the tracker:
+The directory `bin/JPEGImages` contains all frame images named by their indices (start from 1). The file `bin/config.txt` stores the configurations of the tracker:
 
 ```
 120 human 205 151 222 201
