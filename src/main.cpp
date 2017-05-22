@@ -9,8 +9,6 @@
 
 #include "kcftracker.hpp"
 
-#include <dirent.h>
-
 using namespace std;
 using namespace cv;
 
@@ -32,20 +30,25 @@ int main(int argc, char* argv[]) {
     bool LAB = false;
 
     for(int i = 0; i < argc; i++) {
-        if (strcmp(argv[i], "hog") == 0)
+        if (strcmp(argv[i], "hog") == 0) {
             HOG = true;
-        if (strcmp(argv[i], "fixed_window") == 0)
+        }
+        if (strcmp(argv[i], "fixed_window") == 0) {
             FIXEDWINDOW = true;
-        if (strcmp(argv[i], "singlescale") == 0)
+        }
+        if (strcmp(argv[i], "singlescale") == 0) {
             MULTISCALE = false;
-        if (strcmp(argv[i], "show") == 0)
+        }
+        if (strcmp(argv[i], "show") == 0) {
             SILENT = false;
+        }
         if (strcmp(argv[i], "lab") == 0) {
             LAB = true;
             HOG = true;
         }
-        if (strcmp (argv[i], "gray") == 0)
+        if (strcmp (argv[i], "gray") == 0) {
             HOG = false;
+        }
     }
 
     // Read config file
@@ -59,17 +62,9 @@ int main(int argc, char* argv[]) {
     // Read config like a dumb
     istringstream ss(configLine);
     int totFrames;
-    float xMin, yMin, width, height;
-    char ch;
-    ss >> totFrames;
-    ss >> ch;
-    ss >> xMin;
-    ss >> ch;
-    ss >> yMin;
-    ss >> ch;
-    ss >> width;
-    ss >> ch;
-    ss >> height;
+    float xMin, yMin, xMax, yMax;
+    string label;
+    ss >> totFrames >> label >> xMin >> yMin >> xMax >> yMax;
 
     // Write Results
     ofstream resultsFile;
@@ -80,21 +75,33 @@ int main(int argc, char* argv[]) {
     KCFTracker tracker(HOG, FIXEDWINDOW, MULTISCALE, LAB);
 
     for (int i = 1; i <= totFrames; ++i) {
-        cout << "Compute frame " << i << endl; 
-        string frameName = "../frames/" + toString(i) + ".jpg";
+        cout << "Computing frame " << i << endl;
 
-        // Read each frame from the list
+        string frameName = "../frames/" + toString(i) + ".jpg";
         Mat frame = imread(frameName, CV_LOAD_IMAGE_COLOR);
 
-        // First frame, give the groundtruth to the tracker
-        if (i == 1) {
-            tracker.init( Rect(xMin, yMin, width, height), frame );
-            rectangle( frame, Point( xMin, yMin ), Point( xMin+width, yMin+height), Scalar( 0, 255, 255 ), 1, 8 );
-            resultsFile << xMin << "," << yMin << "," << width << "," << height << endl;
+        if (i == 1) {  // First frame, give the groundtruth to the tracker
+            tracker.init(Rect(xMin, yMin, xMax - xMin, yMax - yMin), frame);
+            rectangle(frame, Point(xMin, yMin), Point(xMax, yMax), Scalar(0, 255, 255), 1, 8);
+            resultsFile << toString(i) << ".jpg "
+                        << label << " "
+                        << xMin << " "
+                        << yMin << " "
+                        << xMax << " "
+                        << yMax << " ";
         } else {  // Update
             Rect result = tracker.update(frame);
-            rectangle( frame, Point( result.x, result.y ), Point( result.x+result.width, result.y+result.height), Scalar( 0, 255, 255 ), 1, 8 );
-            resultsFile << result.x << "," << result.y << "," << result.width << "," << result.height << endl;
+            rectangle(frame, Point(result.x, result.y), Point(result.x + result.width, result.y + result.height), Scalar( 0, 255, 255 ), 1, 8);
+            resultsFile << toString(i) << ".jpg "
+                        << label << " "
+                        << result.x << " "
+                        << result.y << " "
+                        << result.x + result.width << " "
+                        << result.y + result.height << " ";
+        }
+
+        if (i < totFrames) {
+            resultsFile << endl;
         }
 
         if (!SILENT) {

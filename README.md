@@ -32,42 +32,57 @@ There are no external dependencies other than OpenCV 3.0.0+. Tested on freshly i
 ```bash
 $ mkdir build
 $ cd build
-$ cmake -DCMAKE_BUILD_TYPE=Release ..
+$ cmake ..
 $ make
 ```  
 
 ## Running instructions
 
-The frame images are stored in the directory `frames`. All frames are named by its index (started from 1). The configurations are stored in the file `config.txt`:
+The directory `frames` contains all frame images named by their indices (start from 1). The file `config.txt` stores the configurations of the tracker:
 
 ```
-120,205,151,17,50
+120 human 205 151 222 201
 ```
 
-The first number is the total amount of frames. The last four numbers indicates the initial bounding box parameters of the first frame.
+- "120": Frames amount.
+- "human": Label name.
+- "205 151 222 201": Bounding box (left-top coordinate + right-bottom coordinate) of the first frame. 
 
-**Notes:** If your frames are named like "0001.jpg", "02.jpg" or "0100.jpg" (e.g. datasets from [Visual Tracker Benchmark][VTB]), you should run the script below to normalize them to "1.jpg", "2.jpg" and "100.jpg", respectively:
+Run KCF tracker:
+
+```bash
+$ cd build
+$ ./kcf
+```
+
+The bounding box of each frame will be stored to a file named `result.txt`:
+
+```
+1.jpg human 205 151 222 201
+2.jpg human 204 150 221 200
+...
+120.jpg human 58 93 71 132
+```
+
+For each row:
+
+- "1.jpg": Frame name.
+- "human": Label name.
+- "205 151 222 201": Bounding box of the frame.
+
+**Tips:** If your frames are named like "0001.jpg", "02.jpg" or "0100.jpg" (e.g. datasets from [Visual Tracker Benchmark][VTB]), you should run the script below to normalize them to "1.jpg", "2.jpg" and "100.jpg", respectively:
 
 ```
 $ python norm.py
 ```
 
-Suppose you've finished the procudures above. You could run the KCF tracker with the commands below:
-
-```bash
-$ cd build
-$ ./KCF show
-```
-
-The bounding box parameters of each frame will be stored to a file named `result.txt`. 
-
 ***
 
-### Original instrucions:
+### Original instructions
 
 The runtracker.cpp is prepared to be used with the VOT toolkit. The executable "KCF" should be called as:   
 
-./KCF [OPTION_1] [OPTION_2] [...]
+./kcf [OPTION_1] [OPTION_2] [...]
 
 Options available:   
 
@@ -75,7 +90,8 @@ gray - Use raw gray level features as in [1].
 hog - Use HOG features as in [2].   
 lab - Use Lab colorspace features. This option will also enable HOG features by default.   
 singlescale - Performs single-scale detection, using a variable-size window.   
-fixed_window - Keep the window size fixed when in single-scale mode (multi-scale always used a fixed window).    
+fixed_window - Keep the window size fixed when in single-scale mode (multi-scale always used a fixed window).
+show - Show the results in a window.    
 
 To include it in your project, without the VOT toolkit you just need to:
 	
